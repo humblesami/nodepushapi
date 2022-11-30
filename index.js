@@ -27,8 +27,12 @@ app.use("/api/auth", auth);
 app.use("/api/my", my);
 app.use("/api/expoPushTokens", expoPushTokens);
 app.use("/api/messages", messages);
+app.use("/api", (req, res) => {
+    res.send({status: 'success'});
+});
+
 
 const port = process.env.PORT || config.get("port");
 app.listen(port, function() {
-  console.log(`Server started on port ${port}...`);
+    console.log(`Server started on port ${port}...`);
 });
