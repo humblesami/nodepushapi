@@ -2,7 +2,7 @@ const sharp = require("sharp");
 const path = require("path");
 const fs = require("fs");
 
-const outputFolder = "public/assets";
+const outputFolder = "public/images";
 
 module.exports = async (req, res, next) => {
     const images = [];
