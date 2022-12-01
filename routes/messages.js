@@ -63,4 +63,34 @@ router.post("/", [auth, validateWith(schema)], async (req, res) => {
     res.status(201).send();
 });
 
+router.get("/send-get",  async (req, res) => {
+    const listingId = 201, message  = 'Love';
+    const listing = listingsStore.getListing(listingId);
+    if (!listing){ return res.status(400).send({ error: "Invalid listingId." });}
+
+
+    const targetUser = usersStore.getUserById(parseInt(listing.userId));
+    if (!targetUser) return res.status(400).send({error: "Invalid userId."});
+
+    messagesStore.add({
+        fromUserId: 2,
+        toUserId: listing.userId,
+        listingId,
+        content: message,
+    });
+
+    const {expoPushToken} = targetUser;
+
+    if (Expo.isExpoPushToken(expoPushToken)) {
+        console.log('Sending '+message);
+        await sendPushNotification(expoPushToken, message);
+    }
+    else{
+        console.log('\ntargetUser not a push token');
+        console.log(targetUser);
+        console.log('targetUser\n');
+    }
+    res.send({sent: 1});
+});
+
 module.exports = router;
