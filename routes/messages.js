@@ -44,7 +44,6 @@ router.post("/", [auth, validateWith(schema)], async (req, res) => {
     const listing = listingsStore.getListing(listingId);
     if (!listing){ return res.status(400).send({ error: "Invalid listingId." });}
 
-
     const targetUser = usersStore.getUserById(parseInt(listing.userId));
     if (!targetUser) return res.status(400).send({error: "Invalid userId."});
 
@@ -65,9 +64,14 @@ router.post("/", [auth, validateWith(schema)], async (req, res) => {
 
 router.get("/send-get",  async (req, res) => {
     const listingId = 201, message  = 'Love';
+    if(req.user){
+        console.log('Found User => ', req.user.id);
+    }
+    else{
+        console.log('No User Found');
+    }
     const listing = listingsStore.getListing(listingId);
     if (!listing){ return res.status(400).send({ error: "Invalid listingId." });}
-
 
     const targetUser = usersStore.getUserById(parseInt(listing.userId));
     if (!targetUser) return res.status(400).send({error: "Invalid userId."});
@@ -79,18 +83,12 @@ router.get("/send-get",  async (req, res) => {
         content: message,
     });
 
-    const {expoPushToken} = targetUser;
-
+    const expoPushToken = 'ExponentPushToken[ErvPSiA36nt295pRC5dhBE]';
     if (Expo.isExpoPushToken(expoPushToken)) {
-        console.log('Sending '+message);
         await sendPushNotification(expoPushToken, message);
     }
-    else{
-        console.log('\ntargetUser not a push token');
-        console.log(targetUser);
-        console.log('targetUser\n');
-    }
-    res.send({sent: 1});
+    let resp = {sent: 1, message: 'Love by node'};
+    res.send(resp);
 });
 
 module.exports = router;

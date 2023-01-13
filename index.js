@@ -36,6 +36,9 @@ app.use('/app', function (req, res, next) {
     res.send({status: 'success', message: "Router Working For App"});
 });
 
+app.use('/submit-token', function (req, res, next) {
+    res.send({status: 'success', message: "Router Working For App1"});
+});
 
 router.get('/router', function (req, res, next) {
     res.send({status: 'success', message: "Router Working"});
