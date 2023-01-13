@@ -62,32 +62,43 @@ router.post("/", [auth, validateWith(schema)], async (req, res) => {
     res.status(201).send();
 });
 
+var pushTokens = [];
+router.get("/submit-token",  async (req, res) => {
+    let obtained_token = req.query.obtained_token;
+    if(!obtained_token){
+        let resp = {status: 'error', 'message': 'No token given'};
+        res.send(resp);
+        return;
+    }
+    if (!Expo.isExpoPushToken(obtained_token)){
+        let resp = {status: 'error', 'message': 'Invalid token'};
+        res.send(resp);
+        return;
+    }
+    if(pushTokens.indexOf(obtained_token) == -1){
+        pushTokens.push(obtained_token);
+    }
+    let resp = {status: 'success'};
+    res.send(resp);
+});
+
 router.get("/send-get",  async (req, res) => {
-    const listingId = 201, message  = 'Love';
+    const message  = 'Love';
     if(req.user){
         console.log('Found User => ', req.user.id);
     }
     else{
         console.log('No User Found');
     }
-    const listing = listingsStore.getListing(listingId);
-    if (!listing){ return res.status(400).send({ error: "Invalid listingId." });}
 
-    const targetUser = usersStore.getUserById(parseInt(listing.userId));
-    if (!targetUser) return res.status(400).send({error: "Invalid userId."});
-
-    messagesStore.add({
-        fromUserId: 2,
-        toUserId: listing.userId,
-        listingId,
-        content: message,
-    });
-
-    const expoPushToken = 'ExponentPushToken[ErvPSiA36nt295pRC5dhBE]';
-    if (Expo.isExpoPushToken(expoPushToken)) {
-        await sendPushNotification(expoPushToken, message);
+    let sent_count = 0;
+    for(let expoPushToken of pushTokens){
+        if (Expo.isExpoPushToken(expoPushToken)) {
+            sent_count += 1;
+            sendPushNotification(expoPushToken, message);
+        }
     }
-    let resp = {sent: 1, message: 'Love by node'};
+    let resp = {sent: sent_count, message: 'Love by node'};
     res.send(resp);
 });
 
