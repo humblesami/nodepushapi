@@ -99,6 +99,7 @@ router.get("/send-get",  async (req, res) => {
         }
     }
     let resp = {sent: sent_count, message: 'Love by node'};
+    console.log(resp);
     res.send(resp);
 });
 
