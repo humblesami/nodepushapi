@@ -1,9 +1,15 @@
 const { Expo } = require("expo-server-sdk");
 
-const sendPushNotification = async (targetExpoPushToken, message) => {
+const sendPushNotification = async (targetExpoPushToken, alert_id, message) => {
     const expo = new Expo();
     const chunks = expo.chunkPushNotifications([
-        { to: targetExpoPushToken, sound: "default", body: message }
+        {
+            to: targetExpoPushToken,
+            sound: "default",
+            categoryId: alert_id,
+            channelId: 'down_alerts',
+            body: message
+        }
     ]);
 
     const sendChunks = async () => {

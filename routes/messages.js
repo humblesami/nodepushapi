@@ -1,66 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const Joi = require("joi");
 const { Expo } = require("expo-server-sdk");
-
-const usersStore = require("../store/users");
-const listingsStore = require("../store/listings");
-const messagesStore = require("../store/messages");
 const sendPushNotification = require("../utilities/pushNotifications");
 const auth = require("../middleware/auth");
-const validateWith = require("../middleware/validation");
-
-const schema = {
-    listingId: Joi.number().required(),
-    message: Joi.string().required(),
-};
 
 router.get("/", auth, (req, res) => {
-    const messages = messagesStore.getMessagesForUser(req.user.userId);
-
-    const mapUser = (userId) => {
-        const user = usersStore.getUserById(userId);
-        return {
-            id: user.id,
-            name: user.name
-        };
-    };
-
-    const resources = messages.map((message) => ({
-        id: message.id,
-        listingId: message.listingId,
-        dateTime: message.dateTime,
-        content: message.content,
-        fromUser: mapUser(message.fromUserId),
-        toUser: mapUser(message.toUserId),
-    }));
-
-    res.send(resources);
+    res.send({status: 'success'});
 });
 
-router.post("/", [auth, validateWith(schema)], async (req, res) => {
-    const { listingId, message } = req.body;
-
-    const listing = listingsStore.getListing(listingId);
-    if (!listing){ return res.status(400).send({ error: "Invalid listingId." });}
-
-    const targetUser = usersStore.getUserById(parseInt(listing.userId));
-    if (!targetUser) return res.status(400).send({error: "Invalid userId."});
-
-    messagesStore.add({
-        fromUserId: req.user.userId,
-        toUserId: listing.userId,
-        listingId,
-        content: message,
-    });
-
-    const {expoPushToken} = targetUser;
-
-    if (Expo.isExpoPushToken(expoPushToken)) {
-        await sendPushNotification(expoPushToken, message);
-    }
-    res.status(201).send();
-});
 
 var pushTokens = [];
 router.get("/submit-token",  async (req, res) => {
@@ -75,30 +22,102 @@ router.get("/submit-token",  async (req, res) => {
         res.send(resp);
         return;
     }
+    console.log('Token count now => '+pushTokens.length);
     if(pushTokens.indexOf(obtained_token) == -1){
         pushTokens.push(obtained_token);
+    }
+    console.log('Token count now => '+pushTokens.length);
+    let resp = {status: 'success'};
+    res.send(resp);
+});
+
+var notes = {"roz_down": [], "92_down": [], "test":[]};
+var down_alerts = {"roz_down": "Alert\nRoznama is donwn", "92_down": "Alert\n92 news down", "test":"Fine\nJust Testing notes"}
+router.get("/generate",  async (req, res) => {
+    let note_id = req.query.note_id;
+    if(!notes.hasOwnProperty(note_id)){
+        let resp = {status: 'error', message: 'Invalid alert id => '+note_id};
+        res.send(resp);
+        return;
+    }
+    let ind = 0;
+    let audience = [];
+    let removeValFromIndex = [];
+    for(let expoPushToken of pushTokens){
+        if (Expo.isExpoPushToken(expoPushToken)) {
+            audience.push(expoPushToken);
+        }
+        else{
+            removeValFromIndex.push(ind);
+        }
+        ind += 1;
+    }
+    for (var i = removeValFromIndex.length -1; i >= 0; i--)
+    {
+        pushTokens.splice(removeValFromIndex[i], 1);
+    }
+    notes[note_id] = audience;
+    let resp = {status: 'success', audience: audience.length};
+    res.send(resp);
+});
+
+
+router.get("/stop",  async (req, res) => {
+    let note_id = req.query.note_id;
+    let device_token = req.query.device_token;
+    if(!notes.hasOwnProperty(note_id)){
+        let resp = {status: 'error', message: 'Invalid alert id => '+note_id};
+        res.send(resp);
+        return;
+    }
+    let audience = notes[note_id];
+    let active_device_index = audience.indexOf(device_token);
+    if(active_device_index != -1){
+        notes[note_id].splice(active_device_index, 1);
+        console.log('Token count1 now => '+pushTokens.length);
     }
     let resp = {status: 'success'};
     res.send(resp);
 });
 
-router.get("/send-get",  async (req, res) => {
-    const message  = 'Love';
-    if(req.user){
-        console.log('Found User => ', req.user.id);
-    }
-    else{
-        console.log('No User Found');
-    }
+router.get("/check-token",  async (req, res) => {
+    let device_token = req.query.device_token;
+    let token_at_server = pushTokens.find(x=>x == device_token);
+    let message = 'already there';
+    if(!token_at_server){
+        if (!Expo.isExpoPushToken(device_token)){
+            let resp = {status: 'error', 'message': 'Invalid token'};
+            res.send(resp);
+            return;
+        }
+        pushTokens.push(device_token);
+        message = 'Submitted now';
 
+    }
+    let resp = {status: "success", message: message};
+    res.send(resp);
+});
+
+router.get("/send",  async (req, res) => {
+    let note_id = req.query.note_id;
+    if(!notes.hasOwnProperty(note_id)){
+        let resp = {status: 'error', message: 'Invalid alert id => '+note_id};
+        res.send(resp);
+        return;
+    }
+    const message = down_alerts[note_id];
+    let audience = notes[note_id];
+    if(note_id == "test"){
+        audience = pushTokens;
+    }
     let sent_count = 0;
-    for(let expoPushToken of pushTokens){
+    for(let expoPushToken of audience){
         if (Expo.isExpoPushToken(expoPushToken)) {
             sent_count += 1;
-            sendPushNotification(expoPushToken, message);
+            sendPushNotification(expoPushToken, note_id, message);
         }
     }
-    let resp = {sent: sent_count, message: 'Love by node'};
+    let resp = {status: 'success', sent: sent_count};
     console.log(resp);
     res.send(resp);
 });
