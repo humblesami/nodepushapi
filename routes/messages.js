@@ -33,7 +33,6 @@ let messages_module = {
         let resp = {status: 'error', message: message};
         res.send(resp);
     },
-
     generate_alterts: function(note_id, res=undefined){
         let ind = 0;
         let audience = [];
