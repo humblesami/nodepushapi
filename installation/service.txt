@@ -5,9 +5,10 @@ Description=Expo Firebase Node Push Notifications
 Type=simple
 SyslogIdentifier=dap
 PermissionsStartOnly=true
-User=ubuntu
-Group=ubuntu
-ExecStart=node /var/www/nodepushapi/index.js
+RuntimeDirectoryMode=0777
+User=sami
+Group=sami
+ExecStart=/usr/bin/node /home/sami/dev/rnpush/nodepushapi/index.js
 StandardOutput=journal+console
 
 [Install]

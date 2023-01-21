@@ -1,0 +1,4 @@
+sudo systemctl daemon-reload
+sudo systemctl enable dap
+sudo systemctl start dap
+sudo systemctl restart dap

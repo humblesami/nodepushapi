@@ -1,5 +1,14 @@
+const config = {
+    "delay": 1000,
+    "maxImageCount": 3,
+    "port": 3274,
+    "delay": 1000,
+    get: function (prop) {
+        return this[prop];
+    }
+};
+
 var express = require('express');
-const config = require("config");
 var app = express();
 var router = express.Router();
 const port = process.env.PORT || config.get("port");
@@ -33,17 +42,17 @@ app.use("/api/categories", categories);
 app.use("/api/expoPushTokens", expoPushTokens);
 
 app.use('/app', function (req, res, next) {
-    res.send({status: 'success', message: "Router Working For App"});
+    res.send({ status: 'success', message: "Router Working For App" });
 });
 
 
 router.get('/router', function (req, res, next) {
-    res.send({status: 'success', message: "Router Working"});
+    res.send({ status: 'success', message: "Router Working" });
 });
 
 
 app.use(router);
-app.listen(port, function(err){
+app.listen(port, function (err) {
     if (err) console.log(err);
     console.log("Server listening on PORT", port);
 });

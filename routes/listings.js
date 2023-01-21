@@ -1,3 +1,13 @@
+const config = {
+    "delay": 1000,
+    "maxImageCount": 3,
+    "port": 3274,
+    "delay": 1000,
+    get: function (prop) {
+        return this[prop];
+    }
+};
+
 const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
@@ -10,12 +20,11 @@ const auth = require("../middleware/auth");
 const imageResize = require("../middleware/imageResize");
 const delay = require("../middleware/delay");
 const listingMapper = require("../mappers/listings");
-const config = require("config");
 
-const upload = multer({
-    dest: "uploads/",
-    limits: { fieldSize: 25 * 1024 * 1024 },
-});
+// const upload = multer({
+//     dest: "./uploads/",
+//     limits: { fieldSize: 25 * 1024 * 1024 },
+// });
 
 const schema = {
     title: Joi.string().required(),
@@ -52,7 +61,7 @@ router.post(
         // stored in the uploads folder. We'll need to clean up this folder
         // using a separate process.
         // auth,
-        upload.array("images", config.get("maxImageCount")),
+        //upload.array("images", config.get("maxImageCount")),
         validateWith(schema),
         validateCategoryId,
         imageResize,
