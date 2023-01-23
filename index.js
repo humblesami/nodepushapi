@@ -65,11 +65,14 @@ app.use(express.json());
 
 
 var router = express.Router();
-router.get('/', function (req, res, next) {
-    res.send({ status: 'success', message: "Default App" });
+router.get('/other1', function (req, res, next) {
+    res.send({ status: 'success', message: "Other2 App" });
 });
-router.get('/other', function (req, res, next) {
-    res.send({ status: 'success', message: "Other App" });
+router.get('/', function (req, res, next) {
+    res.send({ status: 'success', message: "Main Route" });
+});
+router.get('/other2', function (req, res, next) {
+    res.send({ status: 'success', message: "Other2 App" });
 });
 app.use(router);
 app.use(express.static("public"));
