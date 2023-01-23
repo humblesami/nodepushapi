@@ -33,7 +33,7 @@ let messages_module = {
         let resp = {status: 'error', message: message};
         res.send(resp);
     },
-    generate_alterts: function(note_id, res=undefined){
+    generate_alerts: function(note_id, res=undefined){
         let ind = 0;
         let audience = [];
         let error_message = '';
@@ -235,6 +235,6 @@ router.get("/send",  async (req, res) => {
 });
 
 messages_module.init();
-messages_module.generate_alterts('test');
+messages_module.generate_alerts('test');
 
 module.exports = router;
