@@ -31,8 +31,8 @@ var httpsOptions = undefined;
     }
     catch(er){
         var whoami = require('whoami');
-        console.log(whoami);
-        console.log('Error in read File ');
+        console.log('\n\nError in read File for '+whoami);
+        console.log('\n\n', er);
     }
 })();
 
