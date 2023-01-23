@@ -33,6 +33,7 @@ let messages_module = {
         let resp = {status: 'error', message: message};
         res.send(resp);
     },
+
     generate_alerts: function(note_id, res=undefined){
         let ind = 0;
         let audience = [];
@@ -71,7 +72,6 @@ let messages_module = {
         alert_types[note_id].subscribers = audience;
         return audience;
     },
-
     submit_token: function(req, res) {
         let obtained_token = req.query.obtained_token;
         if(!obtained_token){

@@ -41,17 +41,13 @@ app.use("/api/messages", messages);
 app.use("/api/categories", categories);
 app.use("/api/expoPushTokens", expoPushTokens);
 
-app.use('/app', function (req, res, next) {
-    res.send({ status: 'success', message: "Router Working For App" });
+
+app.get('/', function (req, res, next) {
+    res.send({ status: 'success', message: "Default App" });
 });
-
-
-router.get('/router', function (req, res, next) {
-    res.send({ status: 'success', message: "Router Working" });
-});
-
-
 app.use(router);
+
+
 app.listen(port, function (err) {
     if (err) console.log(err);
     console.log("Server listening on PORT", port);
