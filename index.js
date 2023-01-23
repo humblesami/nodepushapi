@@ -45,6 +45,9 @@ app.use("/api/expoPushTokens", expoPushTokens);
 app.get('/', function (req, res, next) {
     res.send({ status: 'success', message: "Default App" });
 });
+app.get('/other', function (req, res, next) {
+    res.send({ status: 'success', message: "Other Route" });
+});
 app.use(router);
 
 
