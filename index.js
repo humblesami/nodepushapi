@@ -11,9 +11,8 @@ const config = {
 var express = require('express');
 var app = express();
 const port = process.env.PORT || config.get("port");
+var router = express.Router();
 
-
-// var router = express.Router();
 // const my = require("./routes/my");
 // const auth = require("./routes/auth");
 // const user = require("./routes/user");
@@ -27,7 +26,6 @@ const port = process.env.PORT || config.get("port");
 // const helmet = require("helmet");
 // const compression = require("compression");
 
-// app.use(express.static("public"));
 // app.use(express.json());
 // app.use(helmet());
 // app.use(compression());
@@ -41,15 +39,15 @@ const port = process.env.PORT || config.get("port");
 // app.use("/api/messages", messages);
 // app.use("/api/categories", categories);
 // app.use("/api/expoPushTokens", expoPushTokens);
-// app.use(router);
+//app.use(express.static("public"));
+app.use(router);
 
-app.get('/', function (req, res, next) {
+router.get('/', function (req, res, next) {
     res.send({ status: 'success', message: "Default App" });
 });
-app.get('/other', function (req, res, next) {
+router.get('/other', function (req, res, next) {
     res.send({ status: 'success', message: "Other Route" });
 });
-
 
 
 app.listen(port, function (err) {
