@@ -17,8 +17,8 @@ var httpsOptions = undefined;
     let key_file = '';
     let cert_file = '';
     try{
-        key_file = fs.readFileSync("./cert/privkey.pem");
-        cert_file = fs.readFileSync("./cert/fullchain.pem");
+        key_file = fs.readFileSync("cert/privkey.pem");
+        cert_file = fs.readFileSync("cert/fullchain.pem");
         if(key_file && cert_file){
             httpsOptions = {
                 key: key_file,
@@ -32,7 +32,7 @@ var httpsOptions = undefined;
     catch(er){
         var whoami = require('whoami');
         console.log('\n\nError in read File for '+whoami);
-        console.log('\n\n Code: ' + er.code + ' -path: '+er.path);
+        console.log('\n\n Code: ' + er.code + ', path: '+er.path);
     }
 })();
 
