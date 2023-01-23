@@ -25,8 +25,12 @@ var httpsOptions = undefined;
                 cert: cert_file
             };
         }
+        else{
+            console.log('Not key or cert');
+        }
     }
     catch(er){
+        console.log('Error in read => ', er);
     }
 })();
 
