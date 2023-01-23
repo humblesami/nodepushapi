@@ -1,3 +1,4 @@
+sudo nano /etc/systemd/system/dap.service
 sudo systemctl daemon-reload
 sudo systemctl enable dap
 sudo systemctl start dap
