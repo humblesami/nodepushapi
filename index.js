@@ -32,7 +32,7 @@ var httpsOptions = undefined;
     catch(er){
         var whoami = require('whoami');
         console.log('\n\nError in read File for '+whoami);
-        console.log('\n\n', er);
+        console.log('\n\n Code: ' + er.code + ' -path: '+er.path);
     }
 })();
 
