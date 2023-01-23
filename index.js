@@ -30,6 +30,8 @@ var httpsOptions = undefined;
         }
     }
     catch(er){
+        var whoami = require('whoami');
+        console.log(whoami);
         console.log('Error in read => ', er);
     }
 })();
